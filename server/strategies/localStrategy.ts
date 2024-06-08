@@ -14,20 +14,20 @@ declare global {
   }
 }
 
-passport.serializeUser(function (user, cb) {
-  process.nextTick(function () {
-    cb(null, user._id);
+passport.serializeUser(function (user, done) {
+  process.nextTick(async function () {
+    done(null, user._id);
   });
 });
 
-passport.deserializeUser(function (id, cb) {
+passport.deserializeUser(function (id, done) {
   process.nextTick(async function () {
     try {
       const u: UserMongoType | null = await User.findById(id);
-      if (!u) throw new Error("User not found");
-      cb(null, u);
+      if (!u) done(null, null);
+      done(null, u);
     } catch (err) {
-      cb(err, undefined);
+      done(err, undefined);
     }
   });
 });

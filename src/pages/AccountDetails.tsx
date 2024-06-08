@@ -14,10 +14,15 @@ import {
 } from "../../shared/schemas/userSchema";
 import { ButtonType } from "../../shared/schemas/componentStateSchema.ts";
 import { GeneralResponse } from "../../shared/schemas/responseSchema.ts";
+import Spinner from "../components/Spinner.tsx";
+import SmallSpinner from "../components/SmallSpinner.tsx";
 
 export default function AccountDetails() {
   const navigate = useNavigate();
   const [data, isLoading] = useAuthContext();
+  const [loginErrorMessage, setLoginErrorMessage] = useState<string | null>(
+    null
+  );
   const [oldPasswordShow, setOldPasswordShow] = useState(false);
   const [newPasswordShow, setNewPasswordShow] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -38,17 +43,28 @@ export default function AccountDetails() {
   }) => {
     const userPassword = data?.user?.password || null;
     const userId = data?.user?._id || null;
-    if (
-      userId &&
-      userPassword &&
-      (await comparePassword(oldPassword, userPassword))
-    ) {
+    const passwordMatch: boolean = await comparePassword(
+      oldPassword,
+      userPassword
+    );
+
+    if (!passwordMatch) {
+      setButtonState("failed");
+      setLoginErrorMessage("Old password doesn't match");
+      reset();
+      setTimeout(() => {
+        setButtonState("idle");
+      }, 2000);
+    }
+
+    if (userId && userPassword) {
       setButtonState("loading");
       try {
         const res = await fetch(
           `http://localhost:5174/users/${userId}/change-password`,
           {
             method: "PATCH",
+            credentials: "include",
             mode: "cors",
             headers: {
               "Content-Type": "application/json",
@@ -58,10 +74,13 @@ export default function AccountDetails() {
         );
 
         const jsonResponse: GeneralResponse = await res.json();
+        console.log(jsonResponse);
         if (jsonResponse.error) {
           setButtonState("failed");
+          setLoginErrorMessage(jsonResponse.error);
         } else {
           setButtonState("posted");
+          location.reload();
         }
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -159,17 +178,43 @@ export default function AccountDetails() {
           <div className="flex justify-around gap-x-3 py-3">
             <button
               type="button"
-              className="font-satoshi-light relative flex h-12 w-64 justify-center rounded-xl border-2 border-transparent bg-red-600 px-3 py-2 text-2xl transition-all hover:border-double hover:border-white hover:bg-red-700 sm:h-14 sm:w-80 sm:text-3xl"
+              className="font-satoshi-light relative flex h-12 w-64 items-center justify-center rounded-xl border-2 border-transparent bg-red-600 px-3 py-2 text-xl transition-all hover:border-double hover:border-white hover:bg-red-700 sm:h-14 sm:w-80"
               onClick={() => setModalOpen(false)}
             >
-              Close
+              <span>Close</span>
             </button>
             <button
               type="submit"
-              className="font-satoshi-light relative flex h-12 w-64 justify-center rounded-xl border-2 border-transparent bg-green-600 px-3 py-2 text-2xl transition-all hover:border-double hover:border-white hover:bg-green-700 sm:h-14 sm:w-80 sm:text-3xl"
-              onClick={() => setModalOpen(false)}
+              className={`font-satoshi-light relative flex h-12 w-64 items-center justify-center rounded-xl border-2 border-transparent ${buttonState === "failed" ? "bg-red-600" : "bg-green-600"} px-3 py-2 text-xl transition-all hover:border-double hover:border-white hover:${buttonState === "failed" ? "bg-red-700" : "bg-green-700"} sm:h-14 sm:w-80`}
             >
-              Submit
+              <span
+                className={`absolute transition-opacity duration-500 ${
+                  buttonState === "idle" ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                Sign In
+              </span>
+              <span
+                className={`absolute transition-opacity duration-500 ${
+                  buttonState === "posted" ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                Password Changed
+              </span>
+              <span
+                className={`absolute transition-opacity duration-500 ${
+                  buttonState === "loading" ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <SmallSpinner />
+              </span>
+              <span
+                className={`absolute transition-opacity duration-500 ${
+                  buttonState === "failed" ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {loginErrorMessage}
+              </span>
             </button>
           </div>
         </form>
@@ -178,27 +223,28 @@ export default function AccountDetails() {
   );
 
   if (data?.error) navigate("/");
-  if (!isLoading)
-    return (
-      <>
-        <div className="flex flex-col items-center gap-y-8">
-          <div className="flex flex-col items-center">
-            <div className="flex -translate-x-2 select-none flex-row items-center">
-              <img src={mongodbLogo} className="h-16 w-16" />
-              <h1 className="font-satoshi-bold text-3xl sm:text-5xl">
-                {data?.user?.username}
-              </h1>
-            </div>
-            <p className="text-xs">{data?.user?._id}</p>
+  if (isLoading) return <Spinner />;
+
+  return (
+    <>
+      <div className="flex flex-col items-center gap-y-8">
+        <div className="flex flex-col items-center">
+          <div className="flex -translate-x-2 select-none flex-row items-center">
+            <img src={mongodbLogo} className="h-16 w-16" />
+            <h1 className="font-satoshi-bold text-3xl sm:text-5xl">
+              {data?.user?.username}
+            </h1>
           </div>
-          <button
-            className="font-satoshi-light relative flex h-14 w-80 justify-center rounded-xl border-2 border-transparent bg-green-600 px-3 py-2 text-3xl transition-all hover:border-double hover:border-white hover:bg-green-700"
-            onClick={() => setModalOpen(true)}
-          >
-            Change Password
-          </button>
+          <p className="text-xs">{data?.user?._id}</p>
         </div>
-        {modalOpen && createPortal(modal, document.body)}
-      </>
-    );
+        <button
+          className="font-satoshi-light relative flex h-14 w-80 justify-center rounded-xl border-2 border-transparent bg-green-600 px-3 py-2 text-3xl transition-all hover:border-double hover:border-white hover:bg-green-700"
+          onClick={() => setModalOpen(true)}
+        >
+          Change Password
+        </button>
+      </div>
+      {modalOpen && createPortal(modal, document.body)}
+    </>
+  );
 }

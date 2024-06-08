@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { blogSchema } from "./blogSchema.ts";
-import { userMongoSchema } from "./userSchema.ts";
 
 const generalResponseSchema = z.object({
   msg: z.optional(z.string()),
@@ -18,7 +17,7 @@ export type BlogPostResponse = z.infer<typeof blogPostResponseSchema>;
 
 export const authStatusResponseSchema = z
   .object({
-    user: z.optional(userMongoSchema),
+    user: z.optional(z.any()),
     msg: z.optional(z.string()),
     error: z.optional(z.string()),
   })

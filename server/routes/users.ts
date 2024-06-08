@@ -30,7 +30,7 @@ router.get(
 router.post(
   "/users/sign-up",
   validateBody(userSchema),
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const u: UserType = req.body;
     const existingUser = await User.findOne({ username: u.username });
     if (existingUser) {
@@ -44,7 +44,7 @@ router.post(
       const savedUser = await newUser.save();
       req.login(savedUser as any, (err: Error) => {
         if (err) {
-          return res.status(500).send({ error: err.message });
+          return next(err);
         }
         return res.status(201).send({ username: savedUser.username });
       });
@@ -123,7 +123,7 @@ router.patch(
       }
 
       user.password = hashedNewPassword;
-      user.save();
+      await user.save();
       res.status(200).send({ msg: "Password updated successfully" });
     } catch (err) {
       console.error(err);

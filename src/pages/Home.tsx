@@ -3,9 +3,10 @@ import {
   blogMongoSchema,
   BlogMongoType,
 } from "../../shared/schemas/blogSchema.ts";
+import Spinner from "../components/Spinner.tsx";
 
 export default function Home() {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["blogs"],
     queryFn: () =>
       fetch("http://localhost:5174/blogs").then(async (res) => {
@@ -24,5 +25,5 @@ export default function Home() {
   });
 
   console.log(data);
-  if (data != "" && !isLoading && !error) return <div>Data fetched!</div>;
+  return <div>{!isLoading ? "Data fetched!" : <Spinner />}</div>;
 }

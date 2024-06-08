@@ -35,6 +35,7 @@ export default function AuthContextProvider({ children }: ReactNodeProps) {
       })
         .then((res) => res.json())
         .then((data) => {
+          console.log(data);
           authStatusResponseSchema.parse(data);
           return data;
         }),
