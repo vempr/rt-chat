@@ -98,8 +98,8 @@ export default function AccountDetails() {
   const imageNewPassword = newPasswordShow ? hidePasswordSVG : showPasswordSVG;
 
   const modal = (
-    <div className="absolute left-0 top-0 h-[100vh] w-[100vw] bg-slate-800 bg-opacity-50">
-      <div className="bg-darkest-g absolute left-[50%] top-[42%] translate-x-[-50%] translate-y-[-50%] rounded-xl px-3 py-5 text-white shadow-2xl">
+    <div className="absolute left-0 top-0 h-[100vh] w-[100vw] bg-neutral-900 bg-opacity-70">
+      <div className="bg-darkest-g absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] rounded-xl px-5 py-7 text-white shadow-2xl">
         <h2 className="font-satoshi-black mb-4 text-center text-2xl sm:text-3xl">
           Change Password
         </h2>
@@ -230,7 +230,7 @@ export default function AccountDetails() {
       <div className="flex flex-col items-center gap-y-8">
         <div className="flex flex-col items-center">
           <div className="flex -translate-x-2 select-none flex-row items-center">
-            <img src={mongodbLogo} className="h-16 w-16" />
+            <img src={mongodbLogo} className="h-16 w-16 hue-rotate-180" />
             <h1 className="font-satoshi-bold text-3xl sm:text-5xl">
               {data?.user?.username}
             </h1>

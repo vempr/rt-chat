@@ -1,6 +1,7 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContextProvider.tsx";
 import {
   blogFormSchema,
@@ -13,9 +14,16 @@ import Spinner from "../components/Spinner.tsx";
 import SmallSpinner from "../components/SmallSpinner.tsx";
 
 export default function CreateBlog() {
+  const navigate = useNavigate();
   const [data, isLoading] = useAuthContext();
   const [buttonState, setButtonState] = useState<ButtonType>("idle");
   const [base64, setBase64] = useState<string>("");
+
+  useEffect(() => {
+    if (data?.error) {
+      navigate("/sign-in");
+    }
+  }, [data]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -177,13 +185,16 @@ export default function CreateBlog() {
     </form>
   );
 
-  return (
-    <div className="flex flex-col items-center gap-y-8">
-      <div className="flex -translate-x-2 select-none flex-row items-center">
-        <img src={mongodbLogo} className="h-16 w-16" />
-        <p className="font-satoshi-bold text-3xl sm:text-5xl">Create Blog</p>
+  if (isLoading) return <Spinner />;
+
+  if (!data?.error)
+    return (
+      <div className="flex flex-col items-center gap-y-8">
+        <div className="flex -translate-x-2 select-none flex-row items-center">
+          <img src={mongodbLogo} className="h-16 w-16" />
+          <p className="font-satoshi-bold text-3xl sm:text-5xl">Create Blog</p>
+        </div>
+        {formComponent}
       </div>
-      {!isLoading ? formComponent : <Spinner />}
-    </div>
-  );
+    );
 }

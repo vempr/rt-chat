@@ -18,7 +18,7 @@ export default function Footer() {
           <span className="-translate-x-2">_chat_</span>
         </div>
       </Link>
-      <hr className="my-4 h-0.5 w-52 bg-white opacity-30"></hr>
+      <hr className="my-4 h-0.5 w-40 bg-white opacity-30"></hr>
       <nav className="font-satoshi-light text-sm">
         <ul className="flex flex-row gap-x-6">
           <li>
@@ -29,11 +29,6 @@ export default function Footer() {
           <li>
             <Link to="/create" onClick={scrollToTop}>
               Create Blog
-            </Link>
-          </li>
-          <li>
-            <Link to="/sign-in" onClick={scrollToTop}>
-              Sign In
             </Link>
           </li>
         </ul>

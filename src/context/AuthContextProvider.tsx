@@ -50,5 +50,6 @@ export default function AuthContextProvider({ children }: ReactNodeProps) {
 
 export function useAuthContext(): AuthStatusContextType {
   const [data, isLoading, error] = useContext(AuthStatusContext);
+  console.log(data, isLoading, error);
   return [data, isLoading, error];
 }

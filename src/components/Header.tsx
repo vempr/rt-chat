@@ -94,7 +94,7 @@ export default function Header() {
 
         <nav className="font-satoshi-medium hidden sm:block">
           <ul className="flex flex-row gap-x-8">
-            <li>
+            <li className="relative">
               <NavLink to="/" className={underlineClass}>
                 Home
               </NavLink>
