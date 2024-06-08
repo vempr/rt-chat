@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContextProvider";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
+import { comparePassword } from "../../shared/utils/hash.ts";
 import mongodbLogo from "../images/mongodb.png";
 import showPasswordSVG from "../images/show-password.svg";
 import hidePasswordSVG from "../images/hide-password.svg";
@@ -12,6 +12,8 @@ import {
   userChangePasswordFormSchema,
   UserChangePasswordFormType,
 } from "../../shared/schemas/userSchema";
+import { ButtonType } from "../../shared/schemas/componentStateSchema.ts";
+import { GeneralResponse } from "../../shared/schemas/responseSchema.ts";
 
 export default function AccountDetails() {
   const navigate = useNavigate();
@@ -19,6 +21,7 @@ export default function AccountDetails() {
   const [oldPasswordShow, setOldPasswordShow] = useState(false);
   const [newPasswordShow, setNewPasswordShow] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [buttonState, setButtonState] = useState<ButtonType>("idle");
 
   const {
     register,
@@ -29,9 +32,48 @@ export default function AccountDetails() {
     resolver: zodResolver(userChangePasswordFormSchema),
   });
 
-  const handlePasswordForm: SubmitHandler<UserChangePasswordFormType> = (
-    passwords
-  ) => {};
+  const handlePasswordForm: SubmitHandler<UserChangePasswordFormType> = async ({
+    oldPassword,
+    newPassword,
+  }) => {
+    const userPassword = data?.user?.password || null;
+    const userId = data?.user?._id || null;
+    if (
+      userId &&
+      userPassword &&
+      (await comparePassword(oldPassword, userPassword))
+    ) {
+      setButtonState("loading");
+      try {
+        const res = await fetch(
+          `http://localhost:5174/users/${userId}/change-password`,
+          {
+            method: "PATCH",
+            mode: "cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ oldPassword, newPassword }),
+          }
+        );
+
+        const jsonResponse: GeneralResponse = await res.json();
+        if (jsonResponse.error) {
+          setButtonState("failed");
+        } else {
+          setButtonState("posted");
+        }
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        setButtonState("failed");
+      }
+
+      reset();
+      setTimeout(() => {
+        setButtonState("idle");
+      }, 2000);
+    }
+  };
 
   const imageOldPassword = oldPasswordShow ? hidePasswordSVG : showPasswordSVG;
   const imageNewPassword = newPasswordShow ? hidePasswordSVG : showPasswordSVG;
@@ -39,7 +81,7 @@ export default function AccountDetails() {
   const modal = (
     <div className="absolute left-0 top-0 h-[100vh] w-[100vw] bg-slate-800 bg-opacity-50">
       <div className="bg-darkest-g absolute left-[50%] top-[42%] translate-x-[-50%] translate-y-[-50%] rounded-xl px-3 py-5 text-white shadow-2xl">
-        <h2 className="font-satoshi-bold mb-4 text-center text-2xl sm:text-3xl">
+        <h2 className="font-satoshi-black mb-4 text-center text-2xl sm:text-3xl">
           Change Password
         </h2>
         <form
@@ -49,7 +91,7 @@ export default function AccountDetails() {
           <div className="flex flex-col">
             <label
               htmlFor="oldPassword"
-              className="font-satoshi-medium translate-x-1"
+              className="font-satoshi-light translate-x-1"
             >
               Old Password*
             </label>
@@ -59,6 +101,7 @@ export default function AccountDetails() {
                 type={`${oldPasswordShow ? "text" : "password"}`}
                 className="w-full rounded-lg px-2 py-1 text-black lg:w-[40rem]"
                 autoComplete="off"
+                placeholder="************"
                 {...register("oldPassword")}
               />
               <button
@@ -82,7 +125,7 @@ export default function AccountDetails() {
           <div className="flex flex-col">
             <label
               htmlFor="newPassword"
-              className="font-satoshi-medium translate-x-1"
+              className="font-satoshi-light translate-x-1"
             >
               New Password*
             </label>
@@ -92,6 +135,7 @@ export default function AccountDetails() {
                 type={`${newPasswordShow ? "text" : "password"}`}
                 className="w-full rounded-lg px-2 py-1 text-black lg:w-[40rem]"
                 autoComplete="off"
+                placeholder="************"
                 {...register("newPassword")}
               />
               <button

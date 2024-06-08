@@ -16,7 +16,7 @@ type ButtonState = "idle" | "loading" | "failed";
 
 export default function SignIn() {
   const navigate = useNavigate();
-  const [data, isLoading] = useAuthContext();
+  const [data] = useAuthContext();
   const [buttonState, setButtonState] = useState<ButtonState>("idle");
   const [loginErrorMessage, setLoginErrorMessage] = useState<string | null>(
     null
@@ -49,6 +49,7 @@ export default function SignIn() {
       });
 
       const jsonResponse: AuthStatusResponse = await res.json();
+      console.log(jsonResponse);
       if (jsonResponse.error) {
         setButtonState("failed");
         setLoginErrorMessage(jsonResponse.error);
@@ -164,14 +165,13 @@ export default function SignIn() {
   if (data?.user) {
     navigate("/");
   }
-  if (!isLoading)
-    return (
-      <div className="flex flex-col items-center gap-y-8">
-        <div className="flex -translate-x-2 select-none flex-row items-center">
-          <img src={mongodbLogo} className="h-16 w-16" />
-          <p className="font-satoshi-bold text-3xl sm:text-5xl">Sign In</p>
-        </div>
-        {formComponent}
+  return (
+    <div className="flex flex-col items-center gap-y-8">
+      <div className="flex -translate-x-2 select-none flex-row items-center">
+        <img src={mongodbLogo} className="h-16 w-16" />
+        <p className="font-satoshi-bold text-3xl sm:text-5xl">Sign In</p>
       </div>
-    );
+      {formComponent}
+    </div>
+  );
 }

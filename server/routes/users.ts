@@ -3,13 +3,16 @@ import { User } from "../mongoose/schemas/user.ts";
 import { Types } from "mongoose";
 import passport from "../strategies/localStrategy.ts";
 import { userSchema, UserType } from "../../shared/schemas/userSchema.ts";
+import { comparePassword, hashPassword } from "../../shared/utils/hash.ts";
 import validateBody from "../middleware/validateBody.ts";
-import { hashPassword } from "../utils/hash.ts";
+import checkForAuthentication from "../middleware/checkForAuthentication.ts";
 
 const router = Router();
 
-router.get("/users/:id", async (req: Request, res: Response) => {
-  if (req.isAuthenticated()) {
+router.get(
+  "/users/:id",
+  checkForAuthentication,
+  async (req: Request, res: Response) => {
     const userId: string = req.params.id;
     try {
       const objectId = new Types.ObjectId(userId);
@@ -22,8 +25,7 @@ router.get("/users/:id", async (req: Request, res: Response) => {
       return res.status(400).send({ error: "Invalid ID" });
     }
   }
-  return res.status(401).send({ error: "Client unauthenticated" });
-});
+);
 
 router.post(
   "/users/sign-up",
@@ -85,12 +87,13 @@ router.post(
   }
 );
 
-router.post("/users/sign-in/status", (req: Request, res: Response) => {
-  if (req.isAuthenticated()) {
+router.post(
+  "/users/sign-in/status",
+  checkForAuthentication,
+  (req: Request, res: Response) => {
     return res.send({ user: req.user, msg: "Client authenticated" });
   }
-  return res.status(401).send({ error: "Client unauthenticated" });
-});
+);
 
 router.post("/users/log-out", (req: Request, res: Response) => {
   if (!req.user) return res.status(401).send({ error: "Already logged out" });
@@ -99,5 +102,33 @@ router.post("/users/log-out", (req: Request, res: Response) => {
     res.send({ msg: "Logout successful" });
   });
 });
+
+router.patch(
+  "/users/:id/change-password",
+  checkForAuthentication,
+  async (req: Request, res: Response) => {
+    const userId: string = req.params.id;
+    const oldPassword: string = req.body.oldPassword;
+    const newPassword: string = req.body.newPassword;
+
+    try {
+      const objectId = new Types.ObjectId(userId);
+      const hashedNewPassword = await hashPassword(newPassword);
+
+      const user = await User.findById(objectId);
+      if (!user) return res.status(404).send({ error: "User not found" });
+      if (!(await comparePassword(oldPassword, user.password))) {
+        return res.status(400).send({ error: "Old password doesn't match" });
+      }
+
+      user.password = hashedNewPassword;
+      user.save();
+      res.status(200).send({ msg: "Password updated successfully" });
+    } catch (err) {
+      console.error(err);
+      return res.status(400).send({ error: "Invalid ID or other error" });
+    }
+  }
+);
 
 export default router;

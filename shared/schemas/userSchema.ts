@@ -33,7 +33,7 @@ export type UserChangePasswordFormType = z.infer<
   typeof userChangePasswordFormSchema
 >;
 
-const userMongoSchema = userSchema.extend({
+export const userMongoSchema = userSchema.extend({
   _id: z.string(),
   __v: z.number(),
 });

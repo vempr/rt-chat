@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy } from "passport-local";
 import { User } from "../mongoose/schemas/user.ts";
 import { UserMongoType } from "../../shared/schemas/userSchema.ts";
-import { comparePassword } from "../utils/hash.ts";
+import { comparePassword } from "../../shared/utils/hash.ts";
 
 declare global {
   namespace Express {

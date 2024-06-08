@@ -1,7 +1,6 @@
-import "dotenv/config";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
-const saltRounds: number = parseInt(process.env.HASH_SALT_ROUNDS as string);
+const saltRounds = 10;
 
 export const hashPassword = async (password: string) => {
   const salt: string = await bcrypt.genSalt(saltRounds);

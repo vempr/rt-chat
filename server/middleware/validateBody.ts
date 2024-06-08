@@ -12,7 +12,7 @@ const validateBody = (schema: ZodObject<any>) => {
         .status(400)
         .send({ user: req.body, error: validationError.toString() });
     }
-    next();
+    return next();
   };
 };
 

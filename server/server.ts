@@ -1,4 +1,6 @@
-import "dotenv/config";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -10,10 +12,14 @@ import blogsRouter from "./routes/blogs.ts";
 import usersRouter from "./routes/users.ts";
 import catchError from "./middleware/catchError.ts";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
 const app = express();
 const port = 5174;
-const URI = process.env.VITE_MONGODB_URI as string;
-const SECRET = process.env.VITE_SECRET as string;
+const URI = process.env.MONGODB_URI as string;
+const SECRET = process.env.SECRET as string;
 
 mongoose
   .connect(URI)

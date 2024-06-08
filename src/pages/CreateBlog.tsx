@@ -7,13 +7,12 @@ import {
   BlogFormType,
 } from "../../shared/schemas/blogSchema.ts";
 import { BlogPostResponse } from "../../shared/schemas/responseSchema.ts";
+import { ButtonType } from "../../shared/schemas/componentStateSchema.ts";
 import mongodbLogo from "../images/mongodb.png";
-
-type ButtonState = "idle" | "loading" | "posted" | "failed";
 
 export default function CreateBlog() {
   const [data, isLoading] = useAuthContext();
-  const [buttonState, setButtonState] = useState<ButtonState>("idle");
+  const [buttonState, setButtonState] = useState<ButtonType>("idle");
   const [base64, setBase64] = useState<string>("");
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +112,7 @@ export default function CreateBlog() {
         </label>
         <textarea
           id="content"
-          placeholder="Semantics headings (h1, ..., h6) are encouraged :) Thanks!"
+          placeholder="Once upon a time..."
           className="h-64 rounded-lg px-2 py-1 text-black"
           autoComplete="off"
           {...register("body")}
