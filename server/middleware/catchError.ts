@@ -6,6 +6,7 @@ const catchError = (
   res: Response,
   _next: NextFunction
 ) => {
+  console.log(err);
   return res.status(500).send({ error: err.message });
 };
 

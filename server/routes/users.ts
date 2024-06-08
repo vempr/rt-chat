@@ -116,7 +116,8 @@ router.patch(
       const hashedNewPassword = await hashPassword(newPassword);
 
       const user = await User.findById(objectId);
-      if (!user) return res.status(404).send({ error: "User not found" });
+      if (!user)
+        return res.status(404).send({ error: "User not found weeweewee" });
       if (!(await comparePassword(oldPassword, user.password))) {
         return res.status(400).send({ error: "Old password doesn't match" });
       }
