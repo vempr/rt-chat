@@ -30,7 +30,7 @@ router.get(
 router.post(
   "/users/sign-up",
   validateBody(userSchema),
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const u: UserType = req.body;
     const existingUser = await User.findOne({ username: u.username });
     if (existingUser) {
@@ -44,7 +44,7 @@ router.post(
       const savedUser = await newUser.save();
       req.login(savedUser as any, (err: Error) => {
         if (err) {
-          return next(err);
+          return res.status(500).send({ error: err.message });
         }
         return res.status(201).send({ username: savedUser.username });
       });
