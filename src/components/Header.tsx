@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { useAuthContext } from "../context/AuthContextProvider";
+import { useAuthContext } from "../app/AuthContextProvider";
 import mongodbLogo from "../images/mongodb.png";
 
 export default function Header() {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../context/AuthContextProvider";
+import { useAuthContext } from "../app/AuthContextProvider.tsx";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { comparePassword } from "../../shared/utils/hash.ts";

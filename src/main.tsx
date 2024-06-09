@@ -2,9 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import AuthContextProvider from "./context/AuthContextProvider.tsx";
+import { Provider as ReduxStoreProvider } from "react-redux";
+import store from "./app/store.ts";
 import "./styles/main.css";
-
 import Layout from "./components/Layout.tsx";
 import Home from "./pages/Home.tsx";
 import CreateBlog from "./pages/CreateBlog.tsx";
@@ -56,9 +56,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <AuthContextProvider>
+      <ReduxStoreProvider store={store}>
         <RouterProvider router={router} />
-      </AuthContextProvider>
+      </ReduxStoreProvider>
     </QueryClientProvider>
   </React.StrictMode>
 );
