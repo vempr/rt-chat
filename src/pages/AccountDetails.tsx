@@ -1,32 +1,35 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../app/AuthContextProvider.tsx";
+import {
+  useGetAuthenticationStatusQuery,
+  useChangePasswordWithIdMutation,
+} from "../app/api/usersApi.ts";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { comparePassword } from "../../shared/utils/hash.ts";
-import mongodbLogo from "../images/mongodb.png";
-import showPasswordSVG from "../images/show-password.svg";
-import hidePasswordSVG from "../images/hide-password.svg";
 import {
   userChangePasswordFormSchema,
   UserChangePasswordFormType,
 } from "../../shared/schemas/userSchema";
-import { ButtonType } from "../../shared/schemas/componentStateSchema.ts";
-import { GeneralResponse } from "../../shared/schemas/responseSchema.ts";
+import { ButtonState } from "../../shared/schemas/componentStateSchema.ts";
+import mongodbLogo from "../images/mongodb.png";
+import showPasswordSVG from "../images/show-password.svg";
+import hidePasswordSVG from "../images/hide-password.svg";
 import Spinner from "../components/Spinner.tsx";
 import SmallSpinner from "../components/SmallSpinner.tsx";
 
 export default function AccountDetails() {
   const navigate = useNavigate();
-  const [data, isLoading] = useAuthContext();
+  const { data: authData, isLoading } = useGetAuthenticationStatusQuery(null);
+  const [changePasswordWithId] = useChangePasswordWithIdMutation();
   const [loginErrorMessage, setLoginErrorMessage] = useState<string | null>(
     null
   );
   const [oldPasswordShow, setOldPasswordShow] = useState(false);
   const [newPasswordShow, setNewPasswordShow] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [buttonState, setButtonState] = useState<ButtonType>("idle");
+  const [buttonState, setButtonState] = useState<ButtonState>("idle");
 
   const {
     register,
@@ -41,8 +44,9 @@ export default function AccountDetails() {
     oldPassword,
     newPassword,
   }) => {
-    const userPassword = data?.user?.password || null;
-    const userId = data?.user?._id || null;
+    setButtonState("loading");
+    const userPassword = authData?.user?.password || null;
+    const userId = authData?.user?._id || null;
     const passwordMatch: boolean = await comparePassword(
       oldPassword,
       userPassword
@@ -58,26 +62,15 @@ export default function AccountDetails() {
     }
 
     if (userId && userPassword) {
-      setButtonState("loading");
       try {
-        const res = await fetch(
-          `http://localhost:5174/users/${userId}/change-password`,
-          {
-            method: "PATCH",
-            credentials: "include",
-            mode: "cors",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ oldPassword, newPassword }),
-          }
-        );
-
-        const jsonResponse: GeneralResponse = await res.json();
-        console.log(jsonResponse);
-        if (jsonResponse.error) {
+        const res = await changePasswordWithId({
+          id: userId,
+          oldPassword: oldPassword,
+          newPassword: newPassword,
+        });
+        if (res?.data?.error) {
           setButtonState("failed");
-          setLoginErrorMessage(jsonResponse.error);
+          setLoginErrorMessage(res.data.error);
         } else {
           setButtonState("posted");
           location.reload();
@@ -222,7 +215,7 @@ export default function AccountDetails() {
     </div>
   );
 
-  if (data?.error) navigate("/");
+  if (authData?.error) navigate("/");
   if (isLoading) return <Spinner />;
 
   return (
@@ -232,10 +225,10 @@ export default function AccountDetails() {
           <div className="flex -translate-x-2 select-none flex-row items-center">
             <img src={mongodbLogo} className="h-16 w-16 hue-rotate-180" />
             <h1 className="font-satoshi-bold text-3xl sm:text-5xl">
-              {data?.user?.username}
+              {authData?.user?.username}
             </h1>
           </div>
-          <p className="text-xs">{data?.user?._id}</p>
+          <p className="text-xs">{authData?.user?._id}</p>
         </div>
         <button
           className="font-satoshi-light relative flex h-14 w-80 justify-center rounded-xl border-2 border-transparent bg-green-600 px-3 py-2 text-3xl transition-all hover:border-double hover:border-white hover:bg-green-700"

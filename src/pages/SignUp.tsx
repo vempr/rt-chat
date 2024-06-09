@@ -3,14 +3,13 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../app/AuthContextProvider.tsx";
+import { ButtonState } from "../../shared/schemas/componentStateSchema.ts";
 import { UserType, userSchema } from "../../shared/schemas/userSchema.ts";
 import { SignupResponse } from "../../shared/schemas/responseSchema.ts";
 import mongodbLogo from "../images/mongodb.png";
 import showPasswordSVG from "../images/show-password.svg";
 import hidePasswordSVG from "../images/hide-password.svg";
 import SmallSpinner from "../components/SmallSpinner.tsx";
-
-type ButtonState = "idle" | "loading" | "failed";
 
 export default function SignUp() {
   const navigate = useNavigate();

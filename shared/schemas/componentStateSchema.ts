@@ -2,4 +2,4 @@ import { z } from "zod";
 
 const buttonSchema = z.enum(["idle", "loading", "posted", "failed"]);
 
-export type ButtonType = z.infer<typeof buttonSchema>;
+export type ButtonState = z.infer<typeof buttonSchema>;

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { useAuthContext } from "../app/AuthContextProvider";
+import { useGetAuthenticationStatusQuery } from "../app/api/usersApi.ts";
 import mongodbLogo from "../images/mongodb.png";
 
 export default function Header() {
   const location = useLocation();
-  const [data] = useAuthContext();
+  const { data } = useGetAuthenticationStatusQuery(null);
   const [accountDropdownActive, setAccountDropdownActive] = useState(false);
   const [hamburgerActive, setHamburgerActive] = useState(false);
 

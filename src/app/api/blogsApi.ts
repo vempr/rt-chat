@@ -1,9 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { BlogMongoType } from "../../../shared/schemas/blogSchema";
+
+interface GetBlogsResponse {
+  blogs: BlogMongoType[];
+}
 
 const blogsApi = createApi({
   reducerPath: "blogsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5174/blogs/",
+    baseUrl: "http://localhost:5174/blogs",
     credentials: "include",
     mode: "cors",
     headers: {
@@ -11,15 +16,15 @@ const blogsApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getBlogs: builder.query({
+    getBlogs: builder.query<GetBlogsResponse, null>({
       query: () => ({
-        url: "",
+        url: "/",
         method: "GET",
       }),
     }),
     // getBlogCommentsById: builder.query({
     //   query: (id: string) => ({
-    //     url: `comments/${id}`,
+    //     url: `/comments/${id}`,
     //     method: "GET",
     //   }),
     // }),

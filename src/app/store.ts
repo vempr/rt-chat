@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import blogsApi from "./features/blogsSlice";
-import usersApi from "./features/usersSlice";
+import blogsApi from "./api/blogsApi.ts";
+import usersApi from "./api/usersApi.ts";
+import blogsReducer from "./features/blogsSlice.ts";
 
 const store = configureStore({
   reducer: {
     [blogsApi.reducerPath]: blogsApi.reducer,
     [usersApi.reducerPath]: usersApi.reducer,
+    blogs: blogsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(blogsApi.middleware, usersApi.middleware),
