@@ -34,7 +34,7 @@ router.post(
     const u: UserType = req.body;
     const existingUser = await User.findOne({ username: u.username });
     if (existingUser) {
-      return res.status(400).send({ user: u, error: "Username taken" });
+      return res.status(400).send({ error: `Username taken ${u.username}` });
     }
 
     const hashedPass = await hashPassword(u.password);
@@ -46,13 +46,15 @@ router.post(
         if (err) {
           return next(err);
         }
-        return res.status(201).send({ username: savedUser.username });
+        return res
+          .status(201)
+          .send({ msg: `Account ${savedUser.username} created` });
       });
     } catch (err) {
       if (err instanceof Error) {
-        return res.status(400).send({ user: newUser, error: err.message });
+        return res.status(400).send({ error: err.message });
       }
-      return res.status(400).send({ user: newUser, error: err });
+      return res.status(400).send({ error: err });
     }
   }
 );
@@ -80,8 +82,7 @@ router.post(
     req.isAuthenticated();
     if (u) {
       return res.send({
-        username: u.username,
-        msg: "Successful login",
+        msg: `Successful login ${u.username}`,
       });
     }
   }

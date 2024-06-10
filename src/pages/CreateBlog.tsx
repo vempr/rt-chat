@@ -2,28 +2,23 @@ import { ChangeEvent, useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../app/AuthContextProvider.tsx";
+import { useGetAuthenticationStatusQuery } from "../app/api/usersApi.ts";
+import { usePostBlogMutation } from "../app/api/blogsApi.ts";
 import {
   blogFormSchema,
   BlogFormType,
 } from "../../shared/schemas/blogSchema.ts";
-import { BlogPostResponse } from "../../shared/schemas/responseSchema.ts";
-import { ButtonType } from "../../shared/schemas/componentStateSchema.ts";
+import { ButtonState } from "../../shared/schemas/componentStateSchema.ts";
 import mongodbLogo from "../images/mongodb.png";
 import Spinner from "../components/Spinner.tsx";
 import SmallSpinner from "../components/SmallSpinner.tsx";
 
 export default function CreateBlog() {
   const navigate = useNavigate();
-  const [data, isLoading] = useAuthContext();
-  const [buttonState, setButtonState] = useState<ButtonType>("idle");
+  const { data: authData, isLoading } = useGetAuthenticationStatusQuery(null);
+  const [postBlog] = usePostBlogMutation();
+  const [buttonState, setButtonState] = useState<ButtonState>("idle");
   const [base64, setBase64] = useState<string>("");
-
-  useEffect(() => {
-    if (data?.error) {
-      navigate("/sign-in");
-    }
-  }, [data]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -45,23 +40,16 @@ export default function CreateBlog() {
     resolver: zodResolver(blogFormSchema),
   });
 
+  useEffect(() => {
+    if (!authData?.user) navigate("/");
+  }, [authData]);
+
   const submitBlogHandler: SubmitHandler<BlogFormType> = async (blog) => {
     setButtonState("loading");
-
     const formattedBlog = { ...blog, thumbnail: base64 };
-
     try {
-      const res = await fetch("http://localhost:5174/blogs", {
-        method: "POST",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formattedBlog),
-      });
-
-      const jsonResponse: BlogPostResponse = await res.json();
-      if (jsonResponse.error) {
+      const res = await postBlog(formattedBlog);
+      if (res.error || res.data.error) {
         setButtonState("failed");
       } else {
         setButtonState("posted");
@@ -92,12 +80,8 @@ export default function CreateBlog() {
           className="rounded-lg px-2 py-1 text-black opacity-80 hover:cursor-default"
           autoComplete="off"
           readOnly
-          defaultValue={data?.user?.username}
-          {...register("author")}
+          defaultValue={authData?.user?.username}
         />
-        {errors.author?.message && (
-          <p className="italic text-red-600">{errors.author?.message}</p>
-        )}
       </div>
 
       <div className="flex flex-col">
@@ -186,8 +170,7 @@ export default function CreateBlog() {
   );
 
   if (isLoading) return <Spinner />;
-
-  if (!data?.error)
+  if (authData?.user) {
     return (
       <div className="flex flex-col items-center gap-y-8">
         <div className="flex -translate-x-2 select-none flex-row items-center">
@@ -197,4 +180,5 @@ export default function CreateBlog() {
         {formComponent}
       </div>
     );
+  }
 }

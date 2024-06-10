@@ -5,7 +5,7 @@ import mongodbLogo from "../images/mongodb.png";
 
 export default function Header() {
   const location = useLocation();
-  const { data } = useGetAuthenticationStatusQuery(null);
+  const { data: authData } = useGetAuthenticationStatusQuery(null);
   const [accountDropdownActive, setAccountDropdownActive] = useState(false);
   const [hamburgerActive, setHamburgerActive] = useState(false);
 
@@ -143,7 +143,7 @@ export default function Header() {
           <ul
             className={`bg-darker-g absolute right-4 top-16 space-y-3 rounded-lg px-10 py-4 text-center shadow-lg transition-opacity duration-300 ${accountDropdownActive ? "opacity-100" : "opacity-0"}`}
           >
-            {data?.user ? loggedInLinks : notLoggedInLinks}
+            {authData?.user ? loggedInLinks : notLoggedInLinks}
           </ul>
         </nav>
       </div>
@@ -160,7 +160,7 @@ export default function Header() {
               Create Blog
             </NavLink>
           </li>
-          {data?.user ? loggedInLinksMobile : notLoggedInLinksMobile}
+          {authData?.user ? loggedInLinksMobile : notLoggedInLinksMobile}
         </ul>
       </nav>
     </header>

@@ -5,5 +5,5 @@ export default function Home() {
   const { data, isLoading } = useGetBlogsQuery(null);
 
   if (isLoading) return <Spinner />;
-  return <div>{JSON.stringify(data)}</div>;
+  return <div>DATA FETCHED</div>;
 }

@@ -45,8 +45,8 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(blogsRouter);
 app.use(usersRouter);
+app.use(blogsRouter);
 
 app.use(catchError);
 app.listen(port, () => {

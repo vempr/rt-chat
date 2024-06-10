@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import {
@@ -21,7 +21,11 @@ import SmallSpinner from "../components/SmallSpinner.tsx";
 
 export default function AccountDetails() {
   const navigate = useNavigate();
-  const { data: authData, isLoading } = useGetAuthenticationStatusQuery(null);
+  const {
+    data: authData,
+    isLoading,
+    refetch,
+  } = useGetAuthenticationStatusQuery(null);
   const [changePasswordWithId] = useChangePasswordWithIdMutation();
   const [loginErrorMessage, setLoginErrorMessage] = useState<string | null>(
     null
@@ -39,6 +43,11 @@ export default function AccountDetails() {
   } = useForm<UserChangePasswordFormType>({
     resolver: zodResolver(userChangePasswordFormSchema),
   });
+
+  useEffect(() => {
+    console.log(authData);
+    if (!authData?.user) navigate("/");
+  }, [authData]);
 
   const handlePasswordForm: SubmitHandler<UserChangePasswordFormType> = async ({
     oldPassword,
@@ -73,7 +82,7 @@ export default function AccountDetails() {
           setLoginErrorMessage(res.data.error);
         } else {
           setButtonState("posted");
-          location.reload();
+          refetch();
         }
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -185,7 +194,7 @@ export default function AccountDetails() {
                   buttonState === "idle" ? "opacity-100" : "opacity-0"
                 }`}
               >
-                Sign In
+                Submit
               </span>
               <span
                 className={`absolute transition-opacity duration-500 ${
@@ -215,9 +224,7 @@ export default function AccountDetails() {
     </div>
   );
 
-  if (authData?.error) navigate("/");
   if (isLoading) return <Spinner />;
-
   return (
     <>
       <div className="flex flex-col items-center gap-y-8">

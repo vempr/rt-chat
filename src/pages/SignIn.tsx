@@ -1,30 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuthContext } from "../app/AuthContextProvider.tsx";
+import {
+  useGetAuthenticationStatusQuery,
+  useSigninClientMutation,
+} from "../app/api/usersApi.ts";
 import {
   userLoginSchema,
   UserLoginType,
 } from "../../shared/schemas/userSchema.ts";
-import { AuthStatusResponse } from "../../shared/schemas/responseSchema.ts";
 import mongodbLogo from "../images/mongodb.png";
 import showPasswordSVG from "../images/show-password.svg";
 import hidePasswordSVG from "../images/hide-password.svg";
 import SmallSpinner from "../components/SmallSpinner.tsx";
+import Spinner from "../components/Spinner.tsx";
 
 type ButtonState = "idle" | "loading" | "failed";
 
 export default function SignIn() {
   const navigate = useNavigate();
-  const [data] = useAuthContext();
+  const { data: authData, isLoading } = useGetAuthenticationStatusQuery(null);
+  const [signinClient] = useSigninClientMutation();
   const [buttonState, setButtonState] = useState<ButtonState>("idle");
   const [loginErrorMessage, setLoginErrorMessage] = useState<string | null>(
     null
   );
   const [passwordShow, setPasswordShow] = useState(false);
-
-  const image = passwordShow ? hidePasswordSVG : showPasswordSVG;
 
   const {
     register,
@@ -35,25 +37,21 @@ export default function SignIn() {
     resolver: zodResolver(userLoginSchema),
   });
 
+  useEffect(() => {
+    if (authData?.user) navigate("/account");
+  }, [authData]);
+
   const submitBlogHandler: SubmitHandler<UserLoginType> = async (user) => {
     setButtonState("loading");
 
     try {
-      const res = await fetch("http://localhost:5174/users/sign-in", {
-        method: "POST",
-        credentials: "include",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(user),
-      });
-
-      const jsonResponse: AuthStatusResponse = await res.json();
-      console.log(jsonResponse);
-      if (jsonResponse.error) {
+      const res = await signinClient(user);
+      console.log(JSON.stringify(res));
+      if (res.error) {
         setButtonState("failed");
-        setLoginErrorMessage(jsonResponse.error);
+        // @ts-ignore
+        setLoginErrorMessage(res?.error?.data?.error as string);
+        // res structure: {"error":{"status":400,"data":{"error":"Invalid Credentials"}}}
       } else {
         navigate("/");
         location.reload();
@@ -69,6 +67,7 @@ export default function SignIn() {
     }, 2000);
   };
 
+  const image = passwordShow ? hidePasswordSVG : showPasswordSVG;
   const formComponent = (
     <form
       onSubmit={handleSubmit(submitBlogHandler)}
@@ -98,7 +97,7 @@ export default function SignIn() {
           <input
             id="password"
             type={`${passwordShow ? "text" : "password"}`}
-            placeholder="XXXXXXXXXXXXXX"
+            placeholder="****************"
             className="w-[90vw] rounded-lg px-2 py-1 text-black sm:w-[70vw] lg:w-[36rem]"
             autoComplete="off"
             {...register("password")}
@@ -152,9 +151,7 @@ export default function SignIn() {
     </form>
   );
 
-  if (data?.user) {
-    navigate("/");
-  }
+  if (isLoading) return <Spinner />;
   return (
     <div className="flex flex-col items-center gap-y-8">
       <div className="flex -translate-x-2 select-none flex-row items-center">

@@ -1,7 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BlogMongoType } from "../../../shared/schemas/blogSchema";
+import {
+  BlogFormType,
+  BlogMongoType,
+} from "../../../shared/schemas/blogSchema";
+import { BlogPostResponseData } from "../../../shared/schemas/responseSchema";
 
-interface GetBlogsResponse {
+interface GetBlogsResponseData {
   blogs: BlogMongoType[];
 }
 
@@ -16,10 +20,17 @@ const blogsApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getBlogs: builder.query<GetBlogsResponse, null>({
+    getBlogs: builder.query<GetBlogsResponseData, null>({
       query: () => ({
         url: "/",
         method: "GET",
+      }),
+    }),
+    postBlog: builder.mutation<BlogPostResponseData, BlogFormType>({
+      query: (blog: BlogFormType) => ({
+        url: "/",
+        method: "POST",
+        body: blog,
       }),
     }),
     // getBlogCommentsById: builder.query({
@@ -31,5 +42,5 @@ const blogsApi = createApi({
   }),
 });
 
-export const { useGetBlogsQuery } = blogsApi;
+export const { useGetBlogsQuery, usePostBlogMutation } = blogsApi;
 export default blogsApi;

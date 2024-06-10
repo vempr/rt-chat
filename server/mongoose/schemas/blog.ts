@@ -2,7 +2,16 @@ import { Schema, model } from "mongoose";
 
 const BlogSchema = new Schema({
   author: {
-    type: Schema.Types.String,
+    type: {
+      _id: {
+        type: Schema.Types.ObjectId,
+        required: true,
+      },
+      username: {
+        type: Schema.Types.String,
+        required: true,
+      },
+    },
     required: true,
   },
   title: {
