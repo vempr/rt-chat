@@ -22,6 +22,12 @@ const blogsApi = createApi({
         method: "GET",
       }),
     }),
+    getBlogById: builder.query<BlogMongoType, string>({
+      query: (id: string) => ({
+        url: `/${id}`,
+        method: "GET",
+      }),
+    }),
     postBlog: builder.mutation<BlogPostResponseData, BlogFormType>({
       query: (blog: BlogFormType) => ({
         url: "/",
@@ -38,5 +44,6 @@ const blogsApi = createApi({
   }),
 });
 
-export const { useGetBlogsQuery, usePostBlogMutation } = blogsApi;
+export const { useGetBlogsQuery, useGetBlogByIdQuery, usePostBlogMutation } =
+  blogsApi;
 export default blogsApi;

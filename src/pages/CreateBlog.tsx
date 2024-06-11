@@ -12,6 +12,7 @@ import { ButtonState } from "../../shared/schemas/componentStateSchema.ts";
 import mongodbLogo from "../images/mongodb.png";
 import Spinner from "../components/Spinner.tsx";
 import SmallSpinner from "../components/SmallSpinner.tsx";
+import FlexWrapper from "../components/FlexWrapper.tsx";
 
 export default function CreateBlog() {
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ export default function CreateBlog() {
         setButtonState("failed");
       } else {
         setButtonState("posted");
+        location.reload();
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -62,7 +64,6 @@ export default function CreateBlog() {
     reset();
     setTimeout(() => {
       setButtonState("idle");
-      location.reload();
     }, 2000);
   };
 
@@ -173,13 +174,17 @@ export default function CreateBlog() {
   if (isLoading) return <Spinner />;
   if (authData?.user) {
     return (
-      <div className="flex flex-col items-center gap-y-8">
-        <div className="flex -translate-x-2 select-none flex-row items-center">
-          <img src={mongodbLogo} className="h-16 w-16" />
-          <p className="font-satoshi-bold text-3xl sm:text-5xl">Create Blog</p>
+      <FlexWrapper>
+        <div className="flex flex-col items-center gap-y-8">
+          <div className="flex -translate-x-2 select-none flex-row items-center">
+            <img src={mongodbLogo} className="h-16 w-16" />
+            <p className="font-satoshi-bold text-3xl sm:text-5xl">
+              Create Blog
+            </p>
+          </div>
+          {formComponent}
         </div>
-        {formComponent}
-      </div>
+      </FlexWrapper>
     );
   }
 }

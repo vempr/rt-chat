@@ -7,7 +7,7 @@ import {
   BlogType,
 } from "../../shared/schemas/blogSchema.ts";
 import validateBody from "../middleware/validateBody.ts";
-import { ObjectId } from "mongoose";
+import { ObjectId, Types } from "mongoose";
 
 const ACCEPTED_IMAGE_TYPES = [
   "image/png",
@@ -21,6 +21,14 @@ const router = Router();
 router.get("/blogs", async (_req: Request, res: Response) => {
   const blogs = await Blog.find();
   res.send(blogs);
+});
+
+router.get("/blogs/:id", async (req: Request, res: Response) => {
+  const blogId = req.params.id as string;
+  const id = new Types.ObjectId(blogId);
+  const blog = await Blog.findById(id).select(["-thumbnail"]);
+  if (!blog) res.status(404).send({ error: "Blog Not Found!" });
+  res.send(blog);
 });
 
 router.post(

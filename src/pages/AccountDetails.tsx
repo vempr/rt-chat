@@ -18,6 +18,7 @@ import showPasswordSVG from "../images/show-password.svg";
 import hidePasswordSVG from "../images/hide-password.svg";
 import Spinner from "../components/Spinner.tsx";
 import SmallSpinner from "../components/SmallSpinner.tsx";
+import FlexWrapper from "../components/FlexWrapper.tsx";
 
 export default function AccountDetails() {
   const navigate = useNavigate();
@@ -226,7 +227,7 @@ export default function AccountDetails() {
 
   if (isLoading) return <Spinner />;
   return (
-    <>
+    <FlexWrapper>
       <div className="flex flex-col items-center gap-y-8">
         <div className="flex flex-col items-center">
           <div className="flex -translate-x-2 select-none flex-row items-center">
@@ -245,6 +246,6 @@ export default function AccountDetails() {
         </button>
       </div>
       {modalOpen && createPortal(modal, document.body)}
-    </>
+    </FlexWrapper>
   );
 }

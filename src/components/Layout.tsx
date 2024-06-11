@@ -8,7 +8,7 @@ export default function Layout() {
   return (
     <div className="bg-dark-g min-h-screen">
       <Header />
-      <main className="flex min-h-[calc(100vh-16.375rem)] items-center justify-center py-6 text-white">
+      <main className="font-satoshi-regular flex min-h-[calc(100vh-16.375rem)] items-center py-6 text-white">
         <Outlet />
       </main>
       <Footer />

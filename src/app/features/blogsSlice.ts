@@ -14,7 +14,9 @@ const blogsSlice = createSlice({
   initialState,
   reducers: {
     addBlogs: (state, action: PayloadAction<BlogMongoType[]>) => {
+      // for storing blogs in cache when client uses pagination and wants to go to a page that they visited
       for (const blog of action.payload) {
+        // @ts-ignore
         state.blogs.push(blog);
       }
     },

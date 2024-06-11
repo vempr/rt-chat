@@ -6,6 +6,7 @@ import store from "./app/store.ts";
 import "./styles/main.css";
 import Layout from "./components/Layout.tsx";
 import Home from "./pages/Home.tsx";
+import Blog from "./pages/Blog.tsx";
 import CreateBlog from "./pages/CreateBlog.tsx";
 import AccountDetails from "./pages/AccountDetails.tsx";
 import SignIn from "./pages/SignIn.tsx";
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "/blog/:id",
+        element: <Blog />,
       },
       {
         path: "/create",

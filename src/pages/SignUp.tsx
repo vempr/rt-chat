@@ -13,6 +13,7 @@ import showPasswordSVG from "../images/show-password.svg";
 import hidePasswordSVG from "../images/hide-password.svg";
 import SmallSpinner from "../components/SmallSpinner.tsx";
 import Spinner from "../components/Spinner.tsx";
+import FlexWrapper from "../components/FlexWrapper.tsx";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -143,12 +144,14 @@ export default function SignUp() {
 
   if (isLoading) return <Spinner />;
   return (
-    <div className="flex flex-col items-center gap-y-8">
-      <div className="flex -translate-x-2 select-none flex-row items-center">
-        <img src={mongodbLogo} className="h-16 w-16" />
-        <p className="font-satoshi-bold text-3xl sm:text-5xl">Sign Up</p>
+    <FlexWrapper>
+      <div className="flex flex-col items-center gap-y-8">
+        <div className="flex -translate-x-2 select-none flex-row items-center">
+          <img src={mongodbLogo} className="h-16 w-16" />
+          <p className="font-satoshi-bold text-3xl sm:text-5xl">Sign Up</p>
+        </div>
+        {formComponent}
       </div>
-      {formComponent}
-    </div>
+    </FlexWrapper>
   );
 }
