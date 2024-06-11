@@ -5,10 +5,6 @@ import {
 } from "../../../shared/schemas/blogSchema";
 import { BlogPostResponseData } from "../../../shared/schemas/responseSchema";
 
-interface GetBlogsResponseData {
-  blogs: BlogMongoType[];
-}
-
 const blogsApi = createApi({
   reducerPath: "blogsApi",
   baseQuery: fetchBaseQuery({
@@ -20,7 +16,7 @@ const blogsApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getBlogs: builder.query<GetBlogsResponseData, null>({
+    getBlogs: builder.query<BlogMongoType[], null>({
       query: () => ({
         url: "/",
         method: "GET",

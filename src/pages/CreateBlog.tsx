@@ -62,6 +62,7 @@ export default function CreateBlog() {
     reset();
     setTimeout(() => {
       setButtonState("idle");
+      location.reload();
     }, 2000);
   };
 

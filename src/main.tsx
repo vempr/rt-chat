@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Provider as ReduxStoreProvider } from "react-redux";
 import store from "./app/store.ts";
 import "./styles/main.css";
@@ -12,14 +11,6 @@ import AccountDetails from "./pages/AccountDetails.tsx";
 import SignIn from "./pages/SignIn.tsx";
 import SignUp from "./pages/SignUp.tsx";
 import LogOut from "./pages/LogOut.tsx";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    },
-  },
-});
 
 const router = createBrowserRouter([
   {
@@ -55,10 +46,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ReduxStoreProvider store={store}>
-        <RouterProvider router={router} />
-      </ReduxStoreProvider>
-    </QueryClientProvider>
+    <ReduxStoreProvider store={store}>
+      <RouterProvider router={router} />
+    </ReduxStoreProvider>
   </React.StrictMode>
 );
