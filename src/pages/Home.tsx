@@ -70,7 +70,7 @@ export default function Home() {
                 There aren't any blogs yet!
               </h2>
               <Link to="/create">
-                <button className="font-satoshi-light rounded-xl border-2 border-transparent bg-green-600 px-3 py-2 text-lg transition-all hover:border-double hover:border-white hover:bg-green-700">
+                <button className="font-satoshi-light rounded-xl border-2 border-transparent bg-green-600 px-3 py-2 text-2xl transition-all hover:border-double hover:border-white hover:bg-green-700">
                   Post The First Blog
                 </button>
               </Link>

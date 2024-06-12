@@ -46,7 +46,6 @@ export default function AccountDetails() {
   });
 
   useEffect(() => {
-    console.log(authData);
     if (!authData?.user) navigate("/");
   }, [authData]);
 

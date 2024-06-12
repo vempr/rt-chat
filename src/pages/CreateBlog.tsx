@@ -42,7 +42,7 @@ export default function CreateBlog() {
   });
 
   useEffect(() => {
-    if (!authData?.user) navigate("/");
+    if (!authData?.user && !isLoading) navigate("/sign-in");
   }, [authData]);
 
   const submitBlogHandler: SubmitHandler<BlogFormType> = async (blog) => {
@@ -54,6 +54,7 @@ export default function CreateBlog() {
         setButtonState("failed");
       } else {
         setButtonState("posted");
+        navigate("/");
         location.reload();
       }
     } catch (error) {

@@ -1,10 +1,10 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 const BlogSchema = new Schema({
   author: {
     type: {
       _id: {
-        type: Schema.Types.ObjectId,
+        type: Types.ObjectId,
         required: true,
       },
       username: {
@@ -34,13 +34,13 @@ const BlogSchema = new Schema({
     type: {
       likes: [
         {
-          type: Schema.Types.ObjectId,
+          type: Types.ObjectId,
           required: true,
         },
       ],
       dislikes: [
         {
-          type: Schema.Types.ObjectId,
+          type: Types.ObjectId,
           required: true,
         },
       ],

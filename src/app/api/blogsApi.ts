@@ -3,11 +3,19 @@ import {
   BlogFormType,
   BlogMongoType,
 } from "../../../shared/schemas/blogSchema";
-import { BlogPostResponseData } from "../../../shared/schemas/responseSchema";
+import {
+  BlogPostResponseData,
+  GeneralResponseData,
+} from "../../../shared/schemas/responseSchema";
 
-type StatsResponseData = {
-  likes: number;
-  dislikes: number;
+// type StatsResponseData = {
+//   likes: number;
+//   dislikes: number;
+// };
+
+type RateBlogRequestParams = {
+  id: string;
+  action: "like" | "dislike" | "unlike" | "undislike";
 };
 
 const blogsApi = createApi({
@@ -33,10 +41,16 @@ const blogsApi = createApi({
         method: "GET",
       }),
     }),
-    getBlogStatsById: builder.query<StatsResponseData, string>({
-      query: (id: string) => ({
-        url: `/stats/${id}`,
-        method: "GET",
+    // getBlogStatsById: builder.query<StatsResponseData, string>({
+    //   query: (id: string) => ({
+    //     url: `/${id}/stats`,
+    //     method: "GET",
+    //   }),
+    // }),
+    rateBlog: builder.mutation<GeneralResponseData, RateBlogRequestParams>({
+      query: (params: RateBlogRequestParams) => ({
+        url: `/${params.id}/${params.action}`,
+        method: "POST",
       }),
     }),
     postBlog: builder.mutation<BlogPostResponseData, BlogFormType>({
@@ -58,7 +72,7 @@ const blogsApi = createApi({
 export const {
   useGetBlogsQuery,
   useGetBlogByIdQuery,
-  useGetBlogStatsByIdQuery,
+  useRateBlogMutation,
   usePostBlogMutation,
 } = blogsApi;
 export default blogsApi;
