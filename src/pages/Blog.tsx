@@ -1,5 +1,8 @@
 import { Link, useParams } from "react-router-dom";
-import { useGetBlogByIdQuery } from "../app/api/blogsApi";
+import {
+  useGetBlogByIdQuery,
+  useGetBlogStatsByIdQuery,
+} from "../app/api/blogsApi";
 import Spinner from "../components/Spinner.tsx";
 
 const heart = (
@@ -59,20 +62,22 @@ const dislike = (
 
 export default function Blog() {
   const params = useParams();
-  const { data: requestedBlog, isLoading } = useGetBlogByIdQuery(
-    params.id as string
-  );
+  const id = params.id as string;
+  const { data: requestedBlog, isLoading: requestedBlogIsLoading } =
+    useGetBlogByIdQuery(id);
+  const { data: blogStats, isLoading: blogStatsIsLoading } =
+    useGetBlogStatsByIdQuery(id);
 
-  if (isLoading) return <Spinner />;
+  if (requestedBlogIsLoading || blogStatsIsLoading) return <Spinner />;
   return (
-    <div className="px-4 sm:px-20">
+    <div className="px-6 sm:px-20">
       <Link
-        className="rounded-xl border-2 border-white border-opacity-50 bg-purple-500 bg-opacity-70 px-3 py-2 transition-all hover:border-double hover:border-opacity-100 hover:bg-purple-600"
+        className="rounded-xl border-2 border-white border-opacity-50 bg-purple-500 px-3 py-2 transition-all hover:border-double hover:border-opacity-100 hover:bg-purple-600"
         to="/"
       >
         Back to Home Page
       </Link>
-      <h1 className="font-satoshi-bold mt-4 text-center text-2xl sm:text-left">
+      <h1 className="font-satoshi-bold mt-8 text-center text-2xl sm:mt-4 sm:text-left">
         {requestedBlog?.title}
       </h1>
       <p className="font-satoshi-light-italic text-md text-center sm:text-left">
@@ -83,10 +88,10 @@ export default function Blog() {
       <p>{requestedBlog?.body}</p>
       <div className="mt-8 flex">
         <button className="font-satoshi-bold flex items-center justify-center gap-x-3 rounded-bl-xl rounded-tl-xl border-2 border-white border-opacity-50 bg-purple-500 px-3 py-2 text-3xl transition-all hover:border-double hover:border-opacity-100 hover:bg-purple-600">
-          {requestedBlog?.reactions.likes} {heart}
+          {blogStats?.likes} {heart}
         </button>
         <button className="font-satoshi-bold flex items-center justify-center gap-x-3 rounded-br-xl rounded-tr-xl border-2 border-white border-opacity-50 bg-purple-500 px-3 py-2 text-3xl transition-all hover:border-double hover:border-opacity-100 hover:bg-purple-600">
-          {dislike} {requestedBlog?.reactions.dislikes}
+          {dislike} {blogStats?.dislikes}
         </button>
       </div>
     </div>

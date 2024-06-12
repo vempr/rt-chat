@@ -74,7 +74,7 @@ export default function Header() {
   );
 
   return (
-    <header className="bg-darker-g flex select-none flex-col px-5 py-5 text-white sm:px-7">
+    <header className="bg-darker-g z-10 flex select-none flex-col px-5 py-5 text-white shadow-xl sm:px-7">
       <div className="flex flex-row items-center justify-between">
         <Link to="/">
           <div className="flex flex-row items-center">

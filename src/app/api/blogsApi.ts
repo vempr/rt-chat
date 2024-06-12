@@ -5,6 +5,11 @@ import {
 } from "../../../shared/schemas/blogSchema";
 import { BlogPostResponseData } from "../../../shared/schemas/responseSchema";
 
+type StatsResponseData = {
+  likes: number;
+  dislikes: number;
+};
+
 const blogsApi = createApi({
   reducerPath: "blogsApi",
   baseQuery: fetchBaseQuery({
@@ -28,6 +33,12 @@ const blogsApi = createApi({
         method: "GET",
       }),
     }),
+    getBlogStatsById: builder.query<StatsResponseData, string>({
+      query: (id: string) => ({
+        url: `/stats/${id}`,
+        method: "GET",
+      }),
+    }),
     postBlog: builder.mutation<BlogPostResponseData, BlogFormType>({
       query: (blog: BlogFormType) => ({
         url: "/",
@@ -44,6 +55,10 @@ const blogsApi = createApi({
   }),
 });
 
-export const { useGetBlogsQuery, useGetBlogByIdQuery, usePostBlogMutation } =
-  blogsApi;
+export const {
+  useGetBlogsQuery,
+  useGetBlogByIdQuery,
+  useGetBlogStatsByIdQuery,
+  usePostBlogMutation,
+} = blogsApi;
 export default blogsApi;

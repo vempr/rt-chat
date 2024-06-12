@@ -32,14 +32,18 @@ const BlogSchema = new Schema({
   },
   reactions: {
     type: {
-      likes: {
-        type: Schema.Types.Number,
-        required: true,
-      },
-      dislikes: {
-        type: Schema.Types.Number,
-        required: true,
-      },
+      likes: [
+        {
+          type: Schema.Types.ObjectId,
+          required: true,
+        },
+      ],
+      dislikes: [
+        {
+          type: Schema.Types.ObjectId,
+          required: true,
+        },
+      ],
     },
     _id: false,
     required: true,

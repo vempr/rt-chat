@@ -10,7 +10,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-darker-g flex select-none flex-col items-center py-12 text-white">
+    <footer className="bg-darker-g z-10 flex select-none flex-col items-center py-12 text-white shadow-xl">
       <Link to="/" className="font-satoshi-bold text-3xl">
         <div className="flex flex-row items-center">
           <span className="translate-x-2">_rt_</span>

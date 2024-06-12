@@ -6,7 +6,7 @@ import Footer from "./Footer.tsx";
 
 export default function Layout() {
   return (
-    <div className="bg-dark-g min-h-screen">
+    <div className="bg-dark-g min-h-screen overflow-x-hidden">
       <Header />
       <main className="font-satoshi-regular flex min-h-[calc(100vh-16.375rem)] items-center py-6 text-white">
         <Outlet />

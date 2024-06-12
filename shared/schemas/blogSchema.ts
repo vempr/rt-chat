@@ -27,8 +27,8 @@ export const blogSchema = z
     date: z.coerce.date(),
     reactions: z
       .object({
-        likes: z.number(),
-        dislikes: z.number(),
+        likes: z.array(z.custom<ObjectId>()),
+        dislikes: z.array(z.custom<ObjectId>()),
       })
       .strict(),
   })

@@ -24,11 +24,30 @@ router.get("/blogs", async (_req: Request, res: Response) => {
 });
 
 router.get("/blogs/:id", async (req: Request, res: Response) => {
-  const blogId = req.params.id as string;
-  const id = new Types.ObjectId(blogId);
-  const blog = await Blog.findById(id).select(["-thumbnail"]);
-  if (!blog) res.status(404).send({ error: "Blog Not Found!" });
-  res.send(blog);
+  try {
+    const blogId = req.params.id as string;
+    const id = new Types.ObjectId(blogId);
+    const blog = await Blog.findById(id).select(["-thumbnail", "-reactions"]);
+    if (!blog) res.status(404).send({ error: "Blog Not Found!" });
+    res.send(blog);
+  } catch (error) {
+    res.status(400).send({ error: "Invalid Blog Id" });
+  }
+});
+
+router.get("/blogs/stats/:id", async (req: Request, res: Response) => {
+  try {
+    const blogId = req.params.id as string;
+    const id = new Types.ObjectId(blogId);
+    const blog = await Blog.findById(id).select("reactions");
+    if (!blog) res.status(404).send({ error: "Blog Not Found!" });
+    res.send({
+      likes: blog?.reactions.likes.length,
+      dislikes: blog?.reactions.dislikes.length,
+    });
+  } catch (error) {
+    res.status(400).send({ error: "Invalid Blog Id" });
+  }
 });
 
 router.post(
@@ -47,8 +66,8 @@ router.post(
       ...b,
       date: new Date(),
       reactions: {
-        likes: 0,
-        dislikes: 0,
+        likes: [],
+        dislikes: [],
       },
     };
 
