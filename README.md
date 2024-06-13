@@ -48,7 +48,7 @@ SECRET=<your-secret>
 ## Dependencies
 - Frontend: React, React Router, Redux Toolkit, Tailwind CSS
 - Backend: Express, MongoDB, Mongoose, Passport.js
-- Development: TypeScript, ESLint, Prettier, Vite
+- Development: TypeScript, ESLint, Prettier, Vite, ThunderClient
 
 ## License
 This project is licensed under the [MIT License](https://opensource.org/license/mit). Feel free to use, modify, and distribute the code according to the terms of the license.
